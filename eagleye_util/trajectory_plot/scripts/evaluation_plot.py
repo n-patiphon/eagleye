@@ -174,9 +174,9 @@ if __name__ == "__main__":
     # plot 6dof error
     error_plot_df = pd.concat([Error_data,error_rpy,error_velocity],axis=1)
     error_table = util_calc.error_evaluation(error_plot_df)
-    util_plot.plot_error_6DoF(error_plot_df,ref_data_name,error_table, font_size)
-    util_plot.plot_error(error_plot_df,ref_data_name, font_size)
-    util_plot.plot_error_distributiln(error_plot_df, font_size,ref_data_name)
+    # util_plot.plot_error_6DoF(error_plot_df,ref_data_name,error_table, font_size)
+    # util_plot.plot_error(error_plot_df,ref_data_name, font_size)
+    # util_plot.plot_error_distributiln(error_plot_df, font_size,ref_data_name)
 
     # plot Cumulative Error Distribution
     diff_2d: List[float] = []
@@ -186,7 +186,7 @@ if __name__ == "__main__":
 
         fig = plt.figure()
         ax1 = fig.add_subplot(1, 1, 1)
-        util_plot.plot_one(ax1, ErrTra_Rate, 'x_label', 'ErrTra', 'Cumulative Error Distribution', '2D error [m]', 'Rate [%]', '-', 10, font_size)
+        # util_plot.plot_one(ax1, ErrTra_Rate, 'x_label', 'ErrTra', 'Cumulative Error Distribution', '2D error [m]', 'Rate [%]', '-', 10, font_size)
         ax1.set_xscale('log') 
         ax1.get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
         ax1.set_xticks([0.01, 0.05, 0.1, 0.5, 1, 3])
@@ -196,20 +196,21 @@ if __name__ == "__main__":
         print("start calc relative position")
         eagleye_vel_xyz = pd.concat([data_df['vel_x'],data_df['vel_y'],data_df['vel_z']],axis=1)
         ref_xyz = pd.concat([ref_df['x'],ref_df['y'],ref_df['z']],axis=1)
-        eagleye_twist_data = pd.concat([data_df['angular_z'],data_df['yawrate_offset_stop'],data_df['yawrate_offset'],data_df['velocity'],data_df['slip']],axis=1)
+        eagleye_twist_data = pd.concat([data_df['angular_x'],data_df['angular_y'],data_df['angular_z'],data_df['yawrate_offset_stop'],data_df['yawrate_offset'],data_df['velocity'],data_df['slip']],axis=1)
         calc_error, dr_trajcetory = util_calc.calc_dr_eagleye(ref_df["TimeStamp"],data_df["distance"],eagleye_twist_data,np.deg2rad(ref_rpy["yaw"]),ref_xyz,distance_length,distance_step,based_heaing_angle)
+        calc_error_3d, dr_trajcetory_3d = util_calc.calc_dr_eagleye_3d(ref_df["TimeStamp"],data_df["distance"],eagleye_twist_data,ref_rpy,ref_xyz,distance_length,distance_step,based_heaing_angle)
         print("finished calc relative position")
 
         dr_error_2d = calc_error['error_2d'].values.tolist()
-        ErrTra_dr_df = util_calc.calc_TraRate(dr_error_2d , eval_step_max)
+        #ErrTra_dr_df = util_calc.calc_TraRate(dr_error_2d , eval_step_max)
 
         fig2 = plt.figure()
         ax_dr = fig2.add_subplot(2, 1, 1)
-        util_plot.plot_one(ax_dr, calc_error, 'start_distance', 'error_2d', 'relative position Error', 'start distance [m]', '2D Error [m]', '-', 1, font_size)
+        # util_plot.plot_one(ax_dr, calc_error, 'start_distance', 'error_2d', 'relative position Error', 'start distance [m]', '2D Error [m]', '-', 1, font_size)
         ax_dr.set_ylim([0.0,dr_error_ylim])
         
         ax_trarate_dr = fig2.add_subplot(2, 1, 2)
-        util_plot.plot_one(ax_trarate_dr, ErrTra_dr_df, 'x_label', 'ErrTra', 'Cumulative Error Distribution (relative position)', '2D error [m]', 'Rate [%]', '-', 10, font_size)
+        #util_plot.plot_one(ax_trarate_dr, ErrTra_dr_df, 'x_label', 'ErrTra', 'Cumulative Error Distribution (relative position)', '2D error [m]', 'Rate [%]', '-', 10, font_size)
         ax_trarate_dr.set_xscale('log') 
         ax_trarate_dr.get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
         ax_trarate_dr.set_xticks([0.01, 0.05, 0.1, 0.5, 1, 3])
@@ -218,32 +219,33 @@ if __name__ == "__main__":
         calc_error_csv = pd.concat([calc_error['start_distance'],calc_error['error_2d']],axis=1)
         calc_error_csv.to_csv("eagleye_dr_error.csv", header=True, index=False,float_format='%.9f')
 
-    #  plot velocity
-    if 'velocity' in ref_df.columns and 'velocity' in data_df.columns:
-        fig3 = plt.figure()
-        ax_vel = fig3.add_subplot(2, 1, 1)
-        util_plot.plot_each(ax_vel, ref_df['elapsed_time'], data_df, ref_df, 'velocity', 'Velocity', 'Velocity [m/s]',data_name, ref_data_name, font_size)
+    # #  plot velocity
+    # if 'velocity' in ref_df.columns and 'velocity' in data_df.columns:
+    #     fig3 = plt.figure()
+    #     ax_vel = fig3.add_subplot(2, 1, 1)
+    #     util_plot.plot_each(ax_vel, ref_df['elapsed_time'], data_df, ref_df, 'velocity', 'Velocity', 'Velocity [m/s]',data_name, ref_data_name, font_size)
 
-        ax_err_vel = fig3.add_subplot(2, 1, 2)
-        fig3.suptitle(ref_data_name + ' - eagleye Error')
-        util_plot.plot_one(ax_err_vel, error_plot_df, 'elapsed_time', 'velocity', 'Velocity Error', 'time [s]', 'Velocity error[m/s]', 'None', 1, font_size)
+    #     ax_err_vel = fig3.add_subplot(2, 1, 2)
+    #     fig3.suptitle(ref_data_name + ' - eagleye Error')
+    #     util_plot.plot_one(ax_err_vel, error_plot_df, 'elapsed_time', 'velocity', 'Velocity Error', 'time [s]', 'Velocity error[m/s]', 'None', 1, font_size)
 
-    elif 'velocity' in ref_df.columns or 'velocity' in data_df.columns:
-        fig3 = plt.figure()
-        ax_vel = fig3.add_subplot(1, 1, 1)
-        util_plot.plot_each(ax_vel, ref_df['elapsed_time'], data_df, ref_df, 'velocity', 'Velocity', 'Velocity [m/s]',data_name,ref_data_name, font_size)
+    # elif 'velocity' in ref_df.columns or 'velocity' in data_df.columns:
+    #     fig3 = plt.figure()
+    #     ax_vel = fig3.add_subplot(1, 1, 1)
+    #     util_plot.plot_each(ax_vel, ref_df['elapsed_time'], data_df, ref_df, 'velocity', 'Velocity', 'Velocity [m/s]',data_name,ref_data_name, font_size)
 
-    # plot 2D trajectory
-    util_plot.plot_traj_text('2D Trajectory', ref_data_xyz, eagleye_xyz, ref_df[plot_text_data], plot_text_step, font_size, data_name, ref_data_name)
+    # # plot 2D trajectory
+    # util_plot.plot_traj_text('2D Trajectory', ref_data_xyz, eagleye_xyz, ref_df[plot_text_data], plot_text_step, font_size, data_name, ref_data_name)
 
-    if 'qual' in data_df.columns:
-        util_plot.plot_traj_qual(eagleye_xyz,data_df['qual'], data_df[plot_text_data], plot_text_step, font_size)
-    elif 'qual' in ref_df.columns:
-        util_plot.plot_traj_qual(ref_data_xyz,ref_df['qual'], ref_df[plot_text_data], plot_text_step, font_size)
+    # if 'qual' in data_df.columns:
+    #     util_plot.plot_traj_qual(eagleye_xyz,data_df['qual'], data_df[plot_text_data], plot_text_step, font_size)
+    # elif 'qual' in ref_df.columns:
+    #     util_plot.plot_traj_qual(ref_data_xyz,ref_df['qual'], ref_df[plot_text_data], plot_text_step, font_size)
 
 
     # plot 3d trajectory
-    util_plot.plot_traj_3d( ref_df, data_df, font_size, data_name, ref_data_name)
+    # util_plot.plot_traj_3d( ref_df, data_df, font_size, data_name, ref_data_name)
+    util_plot.plot_traj_3d( ref_df, dr_trajcetory_3d, font_size, data_name, ref_data_name)
 
     print(error_table)
 
