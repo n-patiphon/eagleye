@@ -45,7 +45,7 @@ jobs:
           cd ~/eagleye/
           source /opt/ros/noetic/setup.bash
           rosdep install --from-paths src --ignore-src -r -y
-          catkin_make -DCMAKE_BUILD_TYPE=Release -j1
+          catkin_make -DCMAKE_BUILD_TYPE=Release -j
 
       - name: eagleye_pp
         run: |
@@ -58,12 +58,14 @@ jobs:
           unzip data.zip || true
           source devel/setup.bash
           ./src/eagleye/eagleye_pp/scripts/launch_pp_ci.sh ~/eagleye/2020-07-15-13-39-56.bag src/eagleye/eagleye_pp/eagleye_pp/config/eagleye_pp_config.yaml
+          ls .
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v1
         with:
           name: artifacts
           path: ci_test.png
+          if-no-files-found: warn 
 
       - name: Comment Webpage Screenshot
         uses: saadmk11/comment-webpage-screenshot@main
