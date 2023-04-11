@@ -63,7 +63,7 @@ jobs:
         uses: actions/upload-artifact@v1
         with:
           name: artifacts
-          path: ~/eagleye/ci_test.png
+          path: ci_test.png
 
       - name: Comment Webpage Screenshot
         uses: saadmk11/comment-webpage-screenshot@main
