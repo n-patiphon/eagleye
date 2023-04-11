@@ -254,6 +254,7 @@ if __name__ == "__main__":
     if ci_mode == False:
         plt.show()
     elif ci_mode == True:
+        plt.savefig('ci_test.png')
         if error_table["average"] [3] > ci_2d_error_thershold:
             print('Error: CI has detected a degression.', file=sys.stderr)
             sys.exit(1)
